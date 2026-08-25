@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../db/app_db.dart';
 import '../models/models.dart';
 import '../widgets/common.dart';
@@ -69,11 +70,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text('Tiền tui, tui quản', style: TextStyle(color: Colors.white.withValues(alpha: .48), fontSize: 13)),
                     ]),
                   ),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    child: loading
-                        ? const SizedBox(key: ValueKey('loading'), width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                        : IconButton(key: const ValueKey('refresh'), onPressed: load, icon: const Icon(Icons.refresh_rounded)),
+                  if (loading)
+                    const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                  else
+                    IconButton(tooltip: 'Đồng bộ', onPressed: load, icon: const Icon(Icons.sync_rounded)),
+                  IconButton(
+                    tooltip: 'Đăng xuất',
+                    onPressed: () => Supabase.instance.client.auth.signOut(),
+                    icon: const Icon(Icons.logout_rounded),
                   ),
                 ]),
               ),
