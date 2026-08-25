@@ -33,18 +33,18 @@ class _CardsState extends State<CardsScreen> {
         body: data.isEmpty
             ? const Center(child: Text('Chưa có thẻ tín dụng'))
             : ListView.separated(
-                padding: const EdgeInsets.fromLTRB(14, 8, 14, 96),
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 84),
                 itemCount: data.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
                   final card = data[index];
                   return PremiumCard(
                     child: Row(
                       children: [
                         Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(14)),
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(12)),
                           child: const Icon(Icons.credit_card_rounded),
                         ),
                         const SizedBox(width: 12),
@@ -91,7 +91,7 @@ class _CardFormState extends State<CardForm> {
   int graceDays = 45;
 
   Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, String? hint}) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.only(bottom: 10),
         child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -115,7 +115,7 @@ class _CardFormState extends State<CardForm> {
           key: formKey,
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+            padding: const EdgeInsets.fromLTRB(14, 4, 14, 18),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               DropdownButtonFormField<BorrowBank>(
                 initialValue: bank,
@@ -123,7 +123,7 @@ class _CardFormState extends State<CardForm> {
                 onChanged: (value) { if (value != null) setState(() => bank = value); },
                 decoration: const InputDecoration(labelText: 'Ngân hàng'),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               field('Hạn mức', limit, keyboardType: TextInputType.number, currency: true, hint: '50.000.000'),
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Expanded(
@@ -144,7 +144,7 @@ class _CardFormState extends State<CardForm> {
                   ),
                 ),
               ]),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               field('Số thẻ', number, keyboardType: TextInputType.number, hint: 'Ví dụ 9704...'),
               Row(children: [
                 Expanded(child: field('Ngày hết hạn', expiry, hint: 'MM/YY')),
