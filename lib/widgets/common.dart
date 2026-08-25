@@ -24,10 +24,10 @@ Future<T?> showAppSheet<T>(BuildContext context, Widget child) => showModalBotto
       builder: (_) => Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * .92),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * .88),
           decoration: const BoxDecoration(
             color: Color(0xFF1A2129),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: child,
         ),
@@ -43,12 +43,12 @@ class FormSheet extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 10),
-          Container(width: 42, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(99))),
+          const SizedBox(height: 8),
+          Container(width: 36, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(99))),
           Padding(
-            padding: const EdgeInsets.fromLTRB(18, 12, 10, 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 8, 6),
             child: Row(children: [
-              Expanded(child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600))),
+              Expanded(child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),
               IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
             ]),
           ),
@@ -60,16 +60,16 @@ class FormSheet extends StatelessWidget {
 class PremiumCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
-  const PremiumCard({super.key, required this.child, this.padding = const EdgeInsets.all(16)});
+  const PremiumCard({super.key, required this.child, this.padding = const EdgeInsets.all(14)});
 
   @override
   Widget build(BuildContext context) => Container(
         padding: padding,
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFF252D37), Color(0xFF1C232B)]),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white.withValues(alpha: .10)),
-          boxShadow: const [BoxShadow(blurRadius: 20, offset: Offset(0, 8), color: Colors.black26)],
+          boxShadow: const [BoxShadow(blurRadius: 14, offset: Offset(0, 5), color: Colors.black26)],
         ),
         child: child,
       );
@@ -82,17 +82,17 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.only(bottom: 10),
         child: Row(children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: const Color(0xFFE0C47A).withValues(alpha: .12), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: const Color(0xFFE0C47A).withValues(alpha: .12), borderRadius: BorderRadius.circular(10)),
             child: Text(icon, style: const TextStyle(fontSize: 18)),
           ),
-          const SizedBox(width: 10),
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: .3)),
+          const SizedBox(width: 8),
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0)),
         ]),
       );
 }
