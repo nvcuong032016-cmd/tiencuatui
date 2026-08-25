@@ -83,7 +83,7 @@ class _LoansState extends State<LoansScreen> {
                   return PremiumCard(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Row(children: [
-                        Expanded(child: Text(loan.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800))),
+                        Expanded(child: Text(loan.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
                         IconButton(onPressed: () async { await AppDb.instance.delete('loans', loan.id!); await load(); }, icon: const Icon(Icons.delete_outline_rounded)),
                       ]),
                       Text('${bankLabel(loan.bank)} • ${loan.installments} kỳ', style: const TextStyle(color: Colors.white54)),
@@ -106,7 +106,7 @@ class _LoansState extends State<LoansScreen> {
   Widget _stat(String label, String value) => Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: Colors.white.withValues(alpha: .04), borderRadius: BorderRadius.circular(14)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)), const SizedBox(height: 4), Text(value, style: const TextStyle(fontWeight: FontWeight.w700))]),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)), const SizedBox(height: 4), Text(value, style: const TextStyle(fontWeight: FontWeight.w600))]),
       );
 }
 
