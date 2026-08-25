@@ -9,9 +9,9 @@ class TienCuaTuiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const gold = Color(0xFFD2B56B);
-    const bg = Color(0xFF090B0E);
-    const surface = Color(0xFF14181E);
+    const gold = Color(0xFFE0C47A);
+    const bg = Color(0xFF12171D);
+    const surface = Color(0xFF1D242C);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tiền của tui',
@@ -19,6 +19,11 @@ class TienCuaTuiApp extends StatelessWidget {
         brightness: Brightness.dark,
         useMaterial3: true,
         scaffoldBackgroundColor: bg,
+        fontFamily: 'Roboto',
+        textTheme: ThemeData.dark().textTheme.apply(
+          bodyColor: const Color(0xFFE8EDF2),
+          displayColor: const Color(0xFFF4F7FA),
+        ),
         colorScheme: const ColorScheme.dark(
           primary: gold,
           secondary: gold,
@@ -32,8 +37,8 @@ class TienCuaTuiApp extends StatelessWidget {
           centerTitle: false,
           titleTextStyle: TextStyle(
             fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFFF4F7FA),
           ),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -58,15 +63,15 @@ class TienCuaTuiApp extends StatelessWidget {
             horizontal: 16,
             vertical: 17,
           ),
-          labelStyle: const TextStyle(color: Colors.white60),
-          hintStyle: const TextStyle(color: Colors.white30),
+          labelStyle: const TextStyle(color: Color(0xFFAEB8C3), fontWeight: FontWeight.w400),
+          hintStyle: const TextStyle(color: Color(0xFF7E8995), fontWeight: FontWeight.w400),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Colors.white10),
+            borderSide: const BorderSide(color: Color(0xFF39424D)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
