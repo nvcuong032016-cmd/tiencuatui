@@ -32,7 +32,12 @@ class _AuthScreenState extends State<AuthScreen> {
         await auth.signInWithPassword(email: email.text.trim(), password: password.text);
       }
     } on AuthException catch (error) {
-      if (mounted) setState(() => message = error.message);
+      final text = error.message.contains('SocketException') || error.message.contains('host lookup')
+          ? 'Không thể kết nối máy chủ. Hãy kiểm tra Wi-Fi hoặc 4G rồi thử lại.'
+          : error.message;
+      if (mounted) setState(() => message = text);
+    } catch (_) {
+      if (mounted) setState(() => message = 'Không thể kết nối máy chủ. Vui lòng thử lại.');
     } finally {
       if (mounted) setState(() => loading = false);
     }
