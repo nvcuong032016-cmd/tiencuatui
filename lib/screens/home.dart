@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(children: [
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Text('TIỀN CỦA TUI', style: TextStyle(letterSpacing: 1.8, fontWeight: FontWeight.w900, fontSize: 18)),
+                      const Text('TIỀN CỦA TUI', style: TextStyle(letterSpacing: 1.8, fontWeight: FontWeight.w600, fontSize: 18)),
                       const SizedBox(height: 3),
                       Text('Tiền tui, tui quản', style: TextStyle(color: Colors.white.withValues(alpha: .48), fontSize: 13)),
                     ]),
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(width: 46, height: 46, alignment: Alignment.center, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.calendar_month_rounded)),
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(DateFormat('EEEE, dd/MM/yyyy', 'vi_VN').format(DateTime.now()), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                    Text(DateFormat('EEEE, dd/MM/yyyy', 'vi_VN').format(DateTime.now()), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 4),
                     Text(lunar(DateTime.now()), style: const TextStyle(color: Colors.white54, fontSize: 13)),
                   ])),
@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(children: [
           Expanded(child: Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13))),
           const SizedBox(width: 12),
-          Flexible(child: Text(value, textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14))),
+          Flexible(child: Text(value, textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14))),
         ]),
       );
 }
