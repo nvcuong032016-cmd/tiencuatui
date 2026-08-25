@@ -57,14 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
           onRefresh: load,
           child: ListView(
             physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 32),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(2, 2, 2, 10),
+                padding: const EdgeInsets.fromLTRB(2, 0, 2, 6),
                 child: Row(children: [
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Text('TIỀN CỦA TUI', style: TextStyle(letterSpacing: 1.8, fontWeight: FontWeight.w600, fontSize: 18)),
+                      const Text('Tiền của tui', style: TextStyle(letterSpacing: .1, fontWeight: FontWeight.w600, fontSize: 18)),
                       const SizedBox(height: 3),
                       Text('Tiền tui, tui quản', style: TextStyle(color: Colors.white.withValues(alpha: .48), fontSize: 13)),
                     ]),
@@ -79,35 +79,35 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               PremiumCard(
                 child: Row(children: [
-                  Container(width: 46, height: 46, alignment: Alignment.center, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.calendar_month_rounded)),
+                  Container(width: 40, height: 40, alignment: Alignment.center, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.calendar_month_rounded)),
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(DateFormat('EEEE, dd/MM/yyyy', 'vi_VN').format(DateTime.now()), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(DateFormat('EEEE, dd/MM/yyyy', 'vi_VN').format(DateTime.now()), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 4),
                     Text(lunar(DateTime.now()), style: const TextStyle(color: Colors.white54, fontSize: 13)),
                   ])),
                 ]),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _dashboardCard(
                 icon: '💳',
-                title: 'THẺ TÍN DỤNG',
+                title: 'Thẻ tín dụng',
                 rows: [('Số lượng thẻ', '${cards.length} thẻ'), ('Tổng hạn mức', money(totalLimit))],
                 label: 'Quản lý thẻ',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CardsScreen())).then((_) => load()),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _dashboardCard(
                 icon: '📉',
-                title: 'CÁC KHOẢN VAY',
+                title: 'Các khoản vay',
                 rows: [('Số khoản vay', '${loans.length} khoản'), ('Tổng tiền vay', money(borrowed)), ('Đã trả', money(paid)), ('Còn lại', money(remain))],
                 label: 'Quản lý khoản vay',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoansScreen())).then((_) => load()),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _dashboardCard(
                 icon: '💰',
-                title: 'CHO VAY & TIẾT KIỆM',
+                title: 'Cho vay & tiết kiệm',
                 rows: [('Tiền tiết kiệm', money(savings)), ('Cho vay cá nhân', money(personalLending))],
                 label: 'Xem chi tiết',
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LendingsScreen())).then((_) => load()),
@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             child: TextButton.icon(
               onPressed: onTap,
-              style: TextButton.styleFrom(alignment: Alignment.centerRight, padding: const EdgeInsets.symmetric(vertical: 10)),
+              style: TextButton.styleFrom(alignment: Alignment.centerRight, padding: const EdgeInsets.symmetric(vertical: 6)),
               iconAlignment: IconAlignment.end,
               icon: const Icon(Icons.arrow_forward_rounded, size: 18),
               label: Text(label),
@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
 
   Widget _row(String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(children: [
           Expanded(child: Text(label, style: const TextStyle(color: Colors.white54, fontSize: 13))),
           const SizedBox(width: 12),
