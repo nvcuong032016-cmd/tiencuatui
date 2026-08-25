@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'screens/auth.dart';
 import 'screens/home.dart';
 
-void main() => runApp(const TienCuaTuiApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://gvivwalbcdeppfckkfwi.supabase.co',
+    publishableKey: 'sb_publishable_5wLQ--4iGyFPcsppsQApaA_n2uobrVl',
+  );
+  runApp(const TienCuaTuiApp());
+}
 
 class TienCuaTuiApp extends StatelessWidget {
   const TienCuaTuiApp({super.key});
@@ -89,7 +98,21 @@ class TienCuaTuiApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('vi', 'VN')],
-      home: const HomeScreen(),
+      home: const AuthGate(),
     );
   }
+}
+
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) => StreamBuilder<AuthState>(
+        stream: Supabase.instance.client.auth.onAuthStateChange,
+        builder: (context, snapshot) {
+          final session = snapshot.data?.session ?? Supabase.instance.client.auth.currentSession;
+          return session == null ? const AuthScreen() : const HomeScreen();
+        },
+      );
 }
