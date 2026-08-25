@@ -50,7 +50,7 @@ class _CardsState extends State<CardsScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text('${card.bank} • ${cardTypeLabel(card.type)}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                            Text('${card.bank} • ${cardTypeLabel(card.type)}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                             const SizedBox(height: 5),
                             Text('•••• ${card.number.length >= 4 ? card.number.substring(card.number.length - 4) : card.number}', style: const TextStyle(color: Colors.white60)),
                             const SizedBox(height: 4),
