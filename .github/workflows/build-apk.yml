@@ -36,7 +36,9 @@ jobs:
           channel: stable
           cache: true
       - name: Generate Android project
-        run: flutter create --platforms=android --project-name tien_cua_tui .
+        run: |
+          flutter create --platforms=android --project-name tien_cua_tui .
+          sed -i '/<manifest/a\    <uses-permission android:name="android.permission.INTERNET"/>' android/app/src/main/AndroidManifest.xml
       - run: flutter pub get
       - name: Build Android APK
         run: flutter build apk --release
