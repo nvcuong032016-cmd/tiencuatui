@@ -82,7 +82,6 @@ class _CardFormState extends State<CardForm> {
   final formKey = GlobalKey<FormState>();
   final number = TextEditingController();
   final expiry = TextEditingController();
-  final cvv = TextEditingController();
   final statement = TextEditingController(text: '15');
   final payment = TextEditingController(text: '25');
   final limit = TextEditingController();
@@ -104,7 +103,7 @@ class _CardFormState extends State<CardForm> {
 
   @override
   void dispose() {
-    number.dispose(); expiry.dispose(); cvv.dispose(); statement.dispose(); payment.dispose(); limit.dispose();
+    number.dispose(); expiry.dispose(); statement.dispose(); payment.dispose(); limit.dispose();
     super.dispose();
   }
 
@@ -145,12 +144,8 @@ class _CardFormState extends State<CardForm> {
                 ),
               ]),
               const SizedBox(height: 10),
-              field('Số thẻ', number, keyboardType: TextInputType.number, hint: 'Ví dụ 9704...'),
-              Row(children: [
-                Expanded(child: field('Ngày hết hạn', expiry, hint: 'MM/YY')),
-                const SizedBox(width: 10),
-                Expanded(child: field('Mã CCV', cvv, keyboardType: TextInputType.number)),
-              ]),
+              field('4 số cuối thẻ', number, keyboardType: TextInputType.number, hint: 'Ví dụ 1234'),
+              field('Ngày hết hạn', expiry, hint: 'MM/YY'),
               Row(children: [
                 Expanded(child: field('Ngày sao kê', statement, keyboardType: TextInputType.number)),
                 const SizedBox(width: 10),
@@ -165,8 +160,8 @@ class _CardFormState extends State<CardForm> {
                   final cardLimit = parseMoney(limit.text);
                   final statementDay = int.tryParse(statement.text) ?? 0;
                   final paymentDay = int.tryParse(payment.text) ?? 0;
-                  if (cardLimit <= 0 || graceDays <= 0 || statementDay <= 0 || paymentDay <= 0) return;
-                  await AppDb.instance.saveCard(CreditCardModel(number: number.text.trim(), bank: bankLabel(bank), type: type, expiry: expiry.text.trim(), cvv: cvv.text.trim(), graceDays: graceDays, statementDay: statementDay, paymentDay: paymentDay, limit: cardLimit));
+                  if (cardLimit <= 0 || number.text.trim().length != 4 || graceDays <= 0 || statementDay <= 0 || paymentDay <= 0) return;
+                  await AppDb.instance.saveCard(CreditCardModel(number: number.text.trim(), bank: bankLabel(bank), type: type, expiry: expiry.text.trim(), graceDays: graceDays, statementDay: statementDay, paymentDay: paymentDay, limit: cardLimit));
                   if (context.mounted) Navigator.pop(context);
                 },
               ),
