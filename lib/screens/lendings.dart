@@ -34,24 +34,24 @@ class _LendingsState extends State<LendingsScreen> {
         body: data.isEmpty
             ? const Center(child: Text('Chưa có khoản cho vay/tiết kiệm'))
             : ListView.separated(
-                padding: const EdgeInsets.fromLTRB(14, 8, 14, 100),
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 84),
                 itemCount: data.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (_, index) {
                   final item = data[index];
                   return PremiumCard(
                     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Container(
-                        width: 44,
-                        height: 44,
+                        width: 40,
+                        height: 40,
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(14)),
+                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(12)),
                         child: Text(item.type == LoanType.savings ? '🏦' : '👤', style: const TextStyle(fontSize: 22)),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(item.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text(item.content, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 5),
                           Text('${item.target == LendingTarget.individual ? 'Cá nhân' : 'Tổ chức'} • ${DateFormat('dd/MM/yyyy').format(item.startDate)}', style: const TextStyle(color: Colors.white54)),
                           const SizedBox(height: 8),
@@ -85,7 +85,7 @@ class _LendingFormState extends State<LendingForm> {
   DateTime date = DateTime.now();
 
   Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1, bool required = true, bool readOnly = false, ValueChanged<String>? onChanged}) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.only(bottom: 10),
         child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
@@ -117,7 +117,7 @@ class _LendingFormState extends State<LendingForm> {
           key: formKey,
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+            padding: const EdgeInsets.fromLTRB(14, 4, 14, 18),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               field('Nội dung', content),
               field('Số tiền', amount, keyboardType: TextInputType.number, currency: true, onChanged: _updateRemaining),
@@ -146,7 +146,7 @@ class _LendingFormState extends State<LendingForm> {
                   ),
                 ),
               ]),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               InkWell(
                 borderRadius: BorderRadius.circular(16),
                 onTap: () async {
@@ -158,7 +158,7 @@ class _LendingFormState extends State<LendingForm> {
                   child: Text(DateFormat('dd/MM/yyyy').format(date)),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               field('Đã trả', paid, keyboardType: TextInputType.number, currency: true, onChanged: _updateRemaining),
               field('Còn lại', remaining, readOnly: true, required: false),
               field('Ghi chú (không bắt buộc)', note, maxLines: 3, required: false),
