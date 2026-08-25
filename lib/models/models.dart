@@ -18,26 +18,25 @@ String cardTypeLabel(CardType value) => const {
 }[value]!;
 
 class CreditCardModel {
-  final int? id;
+  final String? id;
   final String number;
   final String bank;
   final CardType type;
   final String expiry;
-  final String cvv;
   final int graceDays;
   final int statementDay;
   final int paymentDay;
   final int limit;
 
-  CreditCardModel({this.id, required this.number, required this.bank, required this.type, required this.expiry, required this.cvv, required this.graceDays, required this.statementDay, required this.paymentDay, required this.limit});
+  CreditCardModel({this.id, required this.number, required this.bank, required this.type, required this.expiry, required this.graceDays, required this.statementDay, required this.paymentDay, required this.limit});
 
-  Map<String, dynamic> toMap() => {'id': id, 'number': number, 'bank': bank, 'type': type.name, 'expiry': expiry, 'cvv': cvv, 'grace_days': graceDays, 'statement_day': statementDay, 'payment_day': paymentDay, 'credit_limit': limit};
+  Map<String, dynamic> toMap() => {'id': id, 'number': number, 'bank': bank, 'type': type.name, 'expiry': expiry, 'grace_days': graceDays, 'statement_day': statementDay, 'payment_day': paymentDay, 'credit_limit': limit};
 
-  factory CreditCardModel.fromMap(Map<String, dynamic> map) => CreditCardModel(id: map['id'] as int?, number: map['number'] as String, bank: map['bank'] as String, type: CardType.values.byName(map['type'] as String), expiry: map['expiry'] as String, cvv: map['cvv'] as String, graceDays: map['grace_days'] as int, statementDay: map['statement_day'] as int, paymentDay: map['payment_day'] as int, limit: map['credit_limit'] as int);
+  factory CreditCardModel.fromMap(Map<String, dynamic> map) => CreditCardModel(id: map['id'] as String?, number: map['number'] as String, bank: map['bank'] as String, type: CardType.values.byName(map['type'] as String), expiry: map['expiry'] as String, graceDays: map['grace_days'] as int, statementDay: map['statement_day'] as int, paymentDay: map['payment_day'] as int, limit: map['credit_limit'] as int);
 }
 
 class LoanModel {
-  final int? id;
+  final String? id;
   final String content;
   final BorrowBank bank;
   final int amount;
@@ -55,11 +54,11 @@ class LoanModel {
 
   Map<String, dynamic> toMap() => {'id': id, 'content': content, 'bank': bank.name, 'amount': amount, 'installments': installments, 'monthly': monthly, 'note': note, 'paid': paid.map((value) => value ? '1' : '0').join(',')};
 
-  factory LoanModel.fromMap(Map<String, dynamic> map) => LoanModel(id: map['id'] as int?, content: map['content'] as String, bank: BorrowBank.values.byName(map['bank'] as String), amount: map['amount'] as int, installments: map['installments'] as int, monthly: map['monthly'] as int, note: (map['note'] as String?) ?? '', paid: (map['paid'] as String).isEmpty ? <bool>[] : (map['paid'] as String).split(',').map((value) => value == '1').toList());
+  factory LoanModel.fromMap(Map<String, dynamic> map) => LoanModel(id: map['id'] as String?, content: map['content'] as String, bank: BorrowBank.values.byName(map['bank'] as String), amount: map['amount'] as int, installments: map['installments'] as int, monthly: map['monthly'] as int, note: (map['note'] as String?) ?? '', paid: (map['paid'] as String).isEmpty ? <bool>[] : (map['paid'] as String).split(',').map((value) => value == '1').toList());
 }
 
 class LendingModel {
-  final int? id;
+  final String? id;
   final String content;
   final int amount;
   final DateTime startDate;
@@ -74,5 +73,5 @@ class LendingModel {
 
   Map<String, dynamic> toMap() => {'id': id, 'content': content, 'amount': amount, 'start_date': startDate.toIso8601String(), 'type': type.name, 'target': target.name, 'paid': paid, 'note': note};
 
-  factory LendingModel.fromMap(Map<String, dynamic> map) => LendingModel(id: map['id'] as int?, content: map['content'] as String, amount: map['amount'] as int, startDate: DateTime.parse(map['start_date'] as String), type: LoanType.values.byName(map['type'] as String), target: LendingTarget.values.byName(map['target'] as String), paid: map['paid'] as int, note: (map['note'] as String?) ?? '');
+  factory LendingModel.fromMap(Map<String, dynamic> map) => LendingModel(id: map['id'] as String?, content: map['content'] as String, amount: map['amount'] as int, startDate: DateTime.parse(map['start_date'] as String), type: LoanType.values.byName(map['type'] as String), target: LendingTarget.values.byName(map['target'] as String), paid: map['paid'] as int, note: (map['note'] as String?) ?? '');
 }
