@@ -26,7 +26,7 @@ Future<T?> showAppSheet<T>(BuildContext context, Widget child) => showModalBotto
         child: Container(
           constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * .92),
           decoration: const BoxDecoration(
-            color: Color(0xFF111419),
+            color: Color(0xFF1A2129),
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
           child: child,
@@ -48,7 +48,7 @@ class FormSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(18, 12, 10, 8),
             child: Row(children: [
-              Expanded(child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800))),
+              Expanded(child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600))),
               IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
             ]),
           ),
@@ -66,10 +66,10 @@ class PremiumCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: padding,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [Color(0xFF171B21), Color(0xFF12151A)]),
+          gradient: const LinearGradient(colors: [Color(0xFF252D37), Color(0xFF1C232B)]),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withValues(alpha: .07)),
-          boxShadow: const [BoxShadow(blurRadius: 24, offset: Offset(0, 10), color: Colors.black38)],
+          border: Border.all(color: Colors.white.withValues(alpha: .10)),
+          boxShadow: const [BoxShadow(blurRadius: 20, offset: Offset(0, 8), color: Colors.black26)],
         ),
         child: child,
       );
@@ -88,11 +88,11 @@ class SectionTitle extends StatelessWidget {
             width: 36,
             height: 36,
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: const Color(0xFFB9A36A).withValues(alpha: .12), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: const Color(0xFFE0C47A).withValues(alpha: .12), borderRadius: BorderRadius.circular(12)),
             child: Text(icon, style: const TextStyle(fontSize: 18)),
           ),
           const SizedBox(width: 10),
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: .3)),
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: .3)),
         ]),
       );
 }
