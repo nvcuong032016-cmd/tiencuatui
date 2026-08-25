@@ -52,6 +52,19 @@ grant select, insert, update, delete on public.cards to authenticated;
 grant select, insert, update, delete on public.loans to authenticated;
 grant select, insert, update, delete on public.lendings to authenticated;
 
+drop policy if exists "cards_select_own" on public.cards;
+drop policy if exists "cards_insert_own" on public.cards;
+drop policy if exists "cards_update_own" on public.cards;
+drop policy if exists "cards_delete_own" on public.cards;
+drop policy if exists "loans_select_own" on public.loans;
+drop policy if exists "loans_insert_own" on public.loans;
+drop policy if exists "loans_update_own" on public.loans;
+drop policy if exists "loans_delete_own" on public.loans;
+drop policy if exists "lendings_select_own" on public.lendings;
+drop policy if exists "lendings_insert_own" on public.lendings;
+drop policy if exists "lendings_update_own" on public.lendings;
+drop policy if exists "lendings_delete_own" on public.lendings;
+
 create policy "cards_select_own" on public.cards for select to authenticated using ((select auth.uid()) = user_id);
 create policy "cards_insert_own" on public.cards for insert to authenticated with check ((select auth.uid()) = user_id);
 create policy "cards_update_own" on public.cards for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
