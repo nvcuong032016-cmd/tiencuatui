@@ -79,26 +79,34 @@ class _LendingFormState extends State<LendingForm> {
   final amount = TextEditingController();
   final paid = TextEditingController(text: '0');
   final note = TextEditingController();
+  final remaining = TextEditingController(text: '0');
   LoanType type = LoanType.lending;
   LendingTarget target = LendingTarget.individual;
   DateTime date = DateTime.now();
 
-  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1}) => Padding(
+  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1, bool required = true, bool readOnly = false, ValueChanged<String>? onChanged}) => Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          readOnly: readOnly,
+          onChanged: onChanged,
           textInputAction: maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
           inputFormatters: currency ? [MoneyInputFormatter()] : null,
           decoration: InputDecoration(labelText: label, suffixText: currency ? 'đ' : null),
-          validator: (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập $label' : null,
+          validator: required ? (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập $label' : null : null,
         ),
       );
 
+  void _updateRemaining([String? _]) {
+    final value = (parseMoney(amount.text) - parseMoney(paid.text)).clamp(0, parseMoney(amount.text)).toInt();
+    remaining.text = money(value);
+  }
+
   @override
   void dispose() {
-    content.dispose(); amount.dispose(); paid.dispose(); note.dispose();
+    content.dispose(); amount.dispose(); paid.dispose(); note.dispose(); remaining.dispose();
     super.dispose();
   }
 
@@ -112,7 +120,7 @@ class _LendingFormState extends State<LendingForm> {
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               field('Nội dung', content),
-              field('Số tiền', amount, keyboardType: TextInputType.number, currency: true),
+              field('Số tiền', amount, keyboardType: TextInputType.number, currency: true, onChanged: _updateRemaining),
               Row(children: [
                 Expanded(
                   child: DropdownButtonFormField<LoanType>(
@@ -151,8 +159,9 @@ class _LendingFormState extends State<LendingForm> {
                 ),
               ),
               const SizedBox(height: 12),
-              field('Đã trả', paid, keyboardType: TextInputType.number, currency: true),
-              field('Ghi chú', note, maxLines: 3),
+              field('Đã trả', paid, keyboardType: TextInputType.number, currency: true, onChanged: _updateRemaining),
+              field('Còn lại', remaining, readOnly: true, required: false),
+              field('Ghi chú (không bắt buộc)', note, maxLines: 3, required: false),
               FilledButton.icon(
                 icon: const Icon(Icons.check_rounded),
                 label: const Text('Lưu khoản'),
