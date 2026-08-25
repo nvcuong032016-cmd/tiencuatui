@@ -11,7 +11,6 @@ class LoansScreen extends StatefulWidget {
 
 class _LoansState extends State<LoansScreen> {
   List<LoanModel> data = [];
-
   Future<void> load() async {
     final value = await AppDb.instance.loans();
     if (mounted) setState(() => data = value);
@@ -25,39 +24,39 @@ class _LoansState extends State<LoansScreen> {
 
   Future<void> _openInstallments(LoanModel loan) async {
     final paid = List<bool>.from(loan.paid);
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(loan.content),
-          content: SizedBox(
-            width: 480,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: loan.installments,
-              itemBuilder: (_, index) => CheckboxListTile(
-                value: index < paid.length ? paid[index] : false,
-                title: Text('Kỳ ${(index + 1).toString().padLeft(2, '0')}'),
-                subtitle: Text(money(loan.monthly)),
-                onChanged: (value) {
-                  while (paid.length < loan.installments) {
-                    paid.add(false);
-                  }
-                  setDialogState(() => paid[index] = value ?? false);
-                },
+    await showAppSheet<void>(
+      context,
+      StatefulBuilder(
+        builder: (context, setDialogState) => FormSheet(
+          title: loan.content,
+          child: Column(children: [
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
+                itemCount: loan.installments,
+                itemBuilder: (_, index) => CheckboxListTile(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  value: index < paid.length ? paid[index] : false,
+                  title: Text('Kỳ ${(index + 1).toString().padLeft(2, '0')}'),
+                  subtitle: Text(money(loan.monthly)),
+                  onChanged: (value) {
+                    while (paid.length < loan.installments) { paid.add(false); }
+                    setDialogState(() => paid[index] = value ?? false);
+                  },
+                ),
               ),
             ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
-            FilledButton(
-              onPressed: () async {
-                await AppDb.instance.saveLoan(loan.copyWith(paid: paid));
-                if (dialogContext.mounted) Navigator.pop(dialogContext);
-              },
-              child: const Text('Lưu kỳ đã trả'),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: FilledButton(
+                onPressed: () async {
+                  await AppDb.instance.saveLoan(loan.copyWith(paid: paid));
+                  if (context.mounted) Navigator.pop(context);
+                },
+                child: const Text('Lưu kỳ đã trả'),
+              ),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -67,48 +66,47 @@ class _LoansState extends State<LoansScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: const Text('Khoản vay')),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => showDialog<void>(context: context, builder: (_) => const LoanForm()).then((_) => load()),
-          child: const Icon(Icons.add),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => showAppSheet<void>(context, const LoanForm()).then((_) => load()),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Thêm khoản vay'),
         ),
         body: data.isEmpty
             ? const Center(child: Text('Chưa có khoản vay'))
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: data.map((loan) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: PremiumCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          Expanded(child: Text(loan.content, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold))),
-                          IconButton(
-                            onPressed: () async {
-                              await AppDb.instance.delete('loans', loan.id!);
-                              await load();
-                            },
-                            icon: const Icon(Icons.delete_outline),
-                          ),
-                        ]),
-                        Text('${bankLabel(loan.bank)} • ${loan.installments} kỳ • ${money(loan.monthly)}/tháng', style: const TextStyle(color: Colors.white60)),
-                        const SizedBox(height: 10),
-                        LinearProgressIndicator(value: loan.amount == 0 ? 0 : (loan.paidAmount / loan.amount).clamp(0.0, 1.0)),
-                        const SizedBox(height: 8),
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Text('Đã trả ${money(loan.paidAmount)}'),
-                          Text('Còn ${money(loan.remaining)}'),
-                        ]),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton.icon(onPressed: () => _openInstallments(loan), icon: const Icon(Icons.checklist), label: const Text('Các kỳ trả góp')),
-                        ),
-                      ],
-                    ),
-                  ),
-                )).toList(),
+            : ListView.separated(
+                padding: const EdgeInsets.fromLTRB(14, 8, 14, 100),
+                itemCount: data.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (_, index) {
+                  final loan = data[index];
+                  final progress = loan.amount == 0 ? 0.0 : (loan.paidAmount / loan.amount).clamp(0.0, 1.0);
+                  return PremiumCard(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Row(children: [
+                        Expanded(child: Text(loan.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800))),
+                        IconButton(onPressed: () async { await AppDb.instance.delete('loans', loan.id!); await load(); }, icon: const Icon(Icons.delete_outline_rounded)),
+                      ]),
+                      Text('${bankLabel(loan.bank)} • ${loan.installments} kỳ', style: const TextStyle(color: Colors.white54)),
+                      const SizedBox(height: 14),
+                      ClipRRect(borderRadius: BorderRadius.circular(99), child: LinearProgressIndicator(value: progress, minHeight: 8)),
+                      const SizedBox(height: 10),
+                      Row(children: [
+                        Expanded(child: _stat('Đã trả', money(loan.paidAmount))),
+                        const SizedBox(width: 8),
+                        Expanded(child: _stat('Còn lại', money(loan.remaining))),
+                      ]),
+                      const SizedBox(height: 8),
+                      Align(alignment: Alignment.centerRight, child: TextButton.icon(onPressed: () => _openInstallments(loan), icon: const Icon(Icons.checklist_rounded), label: const Text('Các kỳ trả góp'))),
+                    ]),
+                  );
+                },
               ),
+      );
+
+  Widget _stat(String label, String value) => Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: .04), borderRadius: BorderRadius.circular(14)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)), const SizedBox(height: 4), Text(value, style: const TextStyle(fontWeight: FontWeight.w700))]),
       );
 }
 
@@ -127,13 +125,16 @@ class _LoanFormState extends State<LoanForm> {
   final note = TextEditingController();
   BorrowBank bank = BorrowBank.sacombank;
 
-  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1}) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
-          decoration: InputDecoration(labelText: label),
-          validator: (value) => value == null || value.trim().isEmpty ? 'Nhập thông tin' : null,
+          maxLines: maxLines,
+          textInputAction: maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
+          inputFormatters: currency ? [MoneyInputFormatter()] : null,
+          decoration: InputDecoration(labelText: label, suffixText: currency ? 'đ' : null),
+          validator: (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập $label' : null,
         ),
       );
 
@@ -144,44 +145,44 @@ class _LoanFormState extends State<LoanForm> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Thêm khoản vay'),
-        content: SizedBox(
-          width: 500,
-          child: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(children: [
-                field('Nội dung vay', content),
-                DropdownButtonFormField<BorrowBank>(
-                  initialValue: bank,
-                  items: BorrowBank.values.map((value) => DropdownMenuItem(value: value, child: Text(bankLabel(value)))).toList(),
-                  onChanged: (value) { if (value != null) setState(() => bank = value); },
-                  decoration: const InputDecoration(labelText: 'Ngân hàng'),
-                ),
-                const SizedBox(height: 10),
-                field('Số tiền vay', amount, keyboardType: TextInputType.number),
-                field('Số kỳ trả góp', installments, keyboardType: TextInputType.number),
-                field('Số tiền trả hàng tháng', monthly, keyboardType: TextInputType.number),
-                field('Ghi chú', note),
+  Widget build(BuildContext context) => FormSheet(
+        title: 'Thêm khoản vay',
+        child: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              field('Nội dung vay', content),
+              DropdownButtonFormField<BorrowBank>(
+                initialValue: bank,
+                items: BorrowBank.values.map((value) => DropdownMenuItem(value: value, child: Text(bankLabel(value)))).toList(),
+                onChanged: (value) { if (value != null) setState(() => bank = value); },
+                decoration: const InputDecoration(labelText: 'Ngân hàng'),
+              ),
+              const SizedBox(height: 12),
+              field('Số tiền vay', amount, keyboardType: TextInputType.number, currency: true),
+              Row(children: [
+                Expanded(child: field('Số kỳ', installments, keyboardType: TextInputType.number)),
+                const SizedBox(width: 10),
+                Expanded(child: field('Trả mỗi tháng', monthly, keyboardType: TextInputType.number, currency: true)),
               ]),
-            ),
+              field('Ghi chú', note, maxLines: 3),
+              FilledButton.icon(
+                icon: const Icon(Icons.check_rounded),
+                label: const Text('Lưu khoản vay'),
+                onPressed: () async {
+                  if (!formKey.currentState!.validate()) return;
+                  final count = int.tryParse(installments.text) ?? 0;
+                  final loanAmount = parseMoney(amount.text);
+                  final monthlyAmount = parseMoney(monthly.text);
+                  if (count <= 0 || loanAmount <= 0 || monthlyAmount <= 0) return;
+                  await AppDb.instance.saveLoan(LoanModel(content: content.text.trim(), bank: bank, amount: loanAmount, installments: count, monthly: monthlyAmount, note: note.text.trim(), paid: List<bool>.filled(count, false)));
+                  if (context.mounted) Navigator.pop(context);
+                },
+              ),
+            ]),
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-          FilledButton(
-            onPressed: () async {
-              if (!formKey.currentState!.validate()) return;
-              final count = int.tryParse(installments.text) ?? 0;
-              final loanAmount = int.tryParse(amount.text) ?? 0;
-              final monthlyAmount = int.tryParse(monthly.text) ?? 0;
-              if (count <= 0 || loanAmount <= 0 || monthlyAmount <= 0) return;
-              await AppDb.instance.saveLoan(LoanModel(content: content.text.trim(), bank: bank, amount: loanAmount, installments: count, monthly: monthlyAmount, note: note.text.trim(), paid: List<bool>.filled(count, false)));
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
       );
 }
