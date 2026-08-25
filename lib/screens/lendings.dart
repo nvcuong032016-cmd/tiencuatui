@@ -51,11 +51,11 @@ class _LendingsState extends State<LendingsScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(item.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                          Text(item.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 5),
                           Text('${item.target == LendingTarget.individual ? 'Cá nhân' : 'Tổ chức'} • ${DateFormat('dd/MM/yyyy').format(item.startDate)}', style: const TextStyle(color: Colors.white54)),
                           const SizedBox(height: 8),
-                          Text('Còn lại ${money(item.remaining)}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                          Text('Còn lại ${money(item.remaining)}', style: const TextStyle(fontWeight: FontWeight.w600)),
                           Text('Đã trả ${money(item.paid)}', style: const TextStyle(color: Colors.white60, fontSize: 13)),
                         ]),
                       ),
