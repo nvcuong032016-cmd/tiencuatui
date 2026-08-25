@@ -25,45 +25,44 @@ class _LendingsState extends State<LendingsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Các khoản cho vay')),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => showDialog<void>(
-            context: context,
-            builder: (_) => const LendingForm(),
-          ).then((_) => load()),
-          child: const Icon(Icons.add),
+        appBar: AppBar(title: const Text('Cho vay & tiết kiệm')),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => showAppSheet<void>(context, const LendingForm()).then((_) => load()),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Thêm khoản'),
         ),
         body: data.isEmpty
             ? const Center(child: Text('Chưa có khoản cho vay/tiết kiệm'))
-            : ListView(
-                padding: const EdgeInsets.all(16),
-                children: data
-                    .map(
-                      (item) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: PremiumCard(
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: Text(
-                              item.type == LoanType.savings ? '🏦' : '👤',
-                              style: const TextStyle(fontSize: 26),
-                            ),
-                            title: Text(item.content),
-                            subtitle: Text(
-                              '${item.target == LendingTarget.individual ? 'Cá nhân' : 'Tổ chức'} • ${DateFormat('dd/MM/yyyy').format(item.startDate)}\nĐã trả ${money(item.paid)} • Còn ${money(item.remaining)}',
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete_outline),
-                              onPressed: () async {
-                                await AppDb.instance.delete('lendings', item.id!);
-                                await load();
-                              },
-                            ),
-                          ),
-                        ),
+            : ListView.separated(
+                padding: const EdgeInsets.fromLTRB(14, 8, 14, 100),
+                itemCount: data.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (_, index) {
+                  final item = data[index];
+                  return PremiumCard(
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: .12), borderRadius: BorderRadius.circular(14)),
+                        child: Text(item.type == LoanType.savings ? '🏦' : '👤', style: const TextStyle(fontSize: 22)),
                       ),
-                    )
-                    .toList(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(item.content, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                          const SizedBox(height: 5),
+                          Text('${item.target == LendingTarget.individual ? 'Cá nhân' : 'Tổ chức'} • ${DateFormat('dd/MM/yyyy').format(item.startDate)}', style: const TextStyle(color: Colors.white54)),
+                          const SizedBox(height: 8),
+                          Text('Còn lại ${money(item.remaining)}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                          Text('Đã trả ${money(item.paid)}', style: const TextStyle(color: Colors.white60, fontSize: 13)),
+                        ]),
+                      ),
+                      IconButton(icon: const Icon(Icons.delete_outline_rounded), onPressed: () async { await AppDb.instance.delete('lendings', item.id!); await load(); }),
+                    ]),
+                  );
+                },
               ),
       );
 }
@@ -84,13 +83,16 @@ class _LendingFormState extends State<LendingForm> {
   LendingTarget target = LendingTarget.individual;
   DateTime date = DateTime.now();
 
-  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1}) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
-          decoration: InputDecoration(labelText: label),
-          validator: (value) => value == null || value.trim().isEmpty ? 'Nhập thông tin' : null,
+          maxLines: maxLines,
+          textInputAction: maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
+          inputFormatters: currency ? [MoneyInputFormatter()] : null,
+          decoration: InputDecoration(labelText: label, suffixText: currency ? 'đ' : null),
+          validator: (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập $label' : null,
         ),
       );
 
@@ -101,18 +103,19 @@ class _LendingFormState extends State<LendingForm> {
   }
 
   @override
-  Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Thêm khoản'),
-        content: SizedBox(
-          width: 500,
-          child: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  field('Nội dung', content),
-                  field('Số tiền', amount, keyboardType: TextInputType.number),
-                  DropdownButtonFormField<LoanType>(
+  Widget build(BuildContext context) => FormSheet(
+        title: 'Thêm khoản',
+        child: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              field('Nội dung', content),
+              field('Số tiền', amount, keyboardType: TextInputType.number, currency: true),
+              Row(children: [
+                Expanded(
+                  child: DropdownButtonFormField<LoanType>(
                     initialValue: type,
                     items: const [
                       DropdownMenuItem(value: LoanType.lending, child: Text('Cho vay')),
@@ -121,8 +124,10 @@ class _LendingFormState extends State<LendingForm> {
                     onChanged: (value) { if (value != null) setState(() => type = value); },
                     decoration: const InputDecoration(labelText: 'Loại'),
                   ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<LendingTarget>(
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<LendingTarget>(
                     initialValue: target,
                     items: const [
                       DropdownMenuItem(value: LendingTarget.individual, child: Text('Cá nhân')),
@@ -131,35 +136,37 @@ class _LendingFormState extends State<LendingForm> {
                     onChanged: (value) { if (value != null) setState(() => target = value); },
                     decoration: const InputDecoration(labelText: 'Đối tượng'),
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text('Ngày bắt đầu: ${DateFormat('dd/MM/yyyy').format(date)}'),
-                    trailing: const Icon(Icons.calendar_today),
-                    onTap: () async {
-                      final selected = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: date);
-                      if (selected != null && mounted) setState(() => date = selected);
-                    },
-                  ),
-                  field('Đã trả', paid, keyboardType: TextInputType.number),
-                  field('Ghi chú', note),
-                ],
+                ),
+              ]),
+              const SizedBox(height: 12),
+              InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () async {
+                  final selected = await showDatePicker(context: context, firstDate: DateTime(2000), lastDate: DateTime(2100), initialDate: date);
+                  if (selected != null && mounted) setState(() => date = selected);
+                },
+                child: InputDecorator(
+                  decoration: const InputDecoration(labelText: 'Ngày bắt đầu', suffixIcon: Icon(Icons.calendar_month_rounded)),
+                  child: Text(DateFormat('dd/MM/yyyy').format(date)),
+                ),
               ),
-            ),
+              const SizedBox(height: 12),
+              field('Đã trả', paid, keyboardType: TextInputType.number, currency: true),
+              field('Ghi chú', note, maxLines: 3),
+              FilledButton.icon(
+                icon: const Icon(Icons.check_rounded),
+                label: const Text('Lưu khoản'),
+                onPressed: () async {
+                  if (!formKey.currentState!.validate()) return;
+                  final amountValue = parseMoney(amount.text);
+                  final paidValue = parseMoney(paid.text);
+                  if (amountValue <= 0 || paidValue < 0) return;
+                  await AppDb.instance.saveLending(LendingModel(content: content.text.trim(), amount: amountValue, startDate: date, type: type, target: target, paid: paidValue, note: note.text.trim()));
+                  if (context.mounted) Navigator.pop(context);
+                },
+              ),
+            ]),
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-          FilledButton(
-            onPressed: () async {
-              if (!formKey.currentState!.validate()) return;
-              final amountValue = int.tryParse(amount.text) ?? 0;
-              final paidValue = int.tryParse(paid.text) ?? 0;
-              if (amountValue <= 0 || paidValue < 0) return;
-              await AppDb.instance.saveLending(LendingModel(content: content.text.trim(), amount: amountValue, startDate: date, type: type, target: target, paid: paidValue, note: note.text.trim()));
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('Lưu'),
-          ),
-        ],
       );
 }
