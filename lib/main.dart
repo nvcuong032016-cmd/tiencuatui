@@ -36,7 +36,7 @@ class TienCuaTuiApp extends StatelessWidget {
           elevation: 0,
           centerTitle: false,
           titleTextStyle: TextStyle(
-            fontSize: 20,
+            fontSize: 19,
             fontWeight: FontWeight.w600,
             color: Color(0xFFF4F7FA),
           ),
@@ -50,9 +50,9 @@ class TienCuaTuiApp extends StatelessWidget {
         ),
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(54),
+            minimumSize: const Size.fromHeight(48),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
         ),
@@ -60,25 +60,25 @@ class TienCuaTuiApp extends StatelessWidget {
           filled: true,
           fillColor: surface,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 17,
+            horizontal: 14,
+            vertical: 14,
           ),
           labelStyle: const TextStyle(color: Color(0xFFAEB8C3), fontWeight: FontWeight.w400),
           hintStyle: const TextStyle(color: Color(0xFF7E8995), fontWeight: FontWeight.w400),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Color(0xFF39424D)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: gold, width: 1.3),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.redAccent),
           ),
         ),
