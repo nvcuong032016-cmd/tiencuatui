@@ -81,14 +81,14 @@ class CardForm extends StatefulWidget {
 class _CardFormState extends State<CardForm> {
   final formKey = GlobalKey<FormState>();
   final number = TextEditingController();
-  final bank = TextEditingController();
   final expiry = TextEditingController();
   final cvv = TextEditingController();
-  final grace = TextEditingController(text: '45');
   final statement = TextEditingController(text: '15');
   final payment = TextEditingController(text: '25');
   final limit = TextEditingController();
   CardType type = CardType.visa;
+  BorrowBank bank = BorrowBank.sacombank;
+  int graceDays = 45;
 
   Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, String? hint}) => Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -104,7 +104,7 @@ class _CardFormState extends State<CardForm> {
 
   @override
   void dispose() {
-    number.dispose(); bank.dispose(); expiry.dispose(); cvv.dispose(); grace.dispose(); statement.dispose(); payment.dispose(); limit.dispose();
+    number.dispose(); expiry.dispose(); cvv.dispose(); statement.dispose(); payment.dispose(); limit.dispose();
     super.dispose();
   }
 
@@ -117,15 +117,35 @@ class _CardFormState extends State<CardForm> {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              field('Số thẻ', number, keyboardType: TextInputType.number, hint: 'Ví dụ 9704...'),
-              field('Ngân hàng', bank, hint: 'Sacombank, VIB, VPBank...'),
-              DropdownButtonFormField<CardType>(
-                initialValue: type,
-                items: CardType.values.map((value) => DropdownMenuItem(value: value, child: Text(cardTypeLabel(value)))).toList(),
-                onChanged: (value) { if (value != null) setState(() => type = value); },
-                decoration: const InputDecoration(labelText: 'Loại thẻ'),
+              DropdownButtonFormField<BorrowBank>(
+                initialValue: bank,
+                items: BorrowBank.values.map((value) => DropdownMenuItem(value: value, child: Text(bankLabel(value)))).toList(),
+                onChanged: (value) { if (value != null) setState(() => bank = value); },
+                decoration: const InputDecoration(labelText: 'Ngân hàng'),
               ),
               const SizedBox(height: 12),
+              field('Hạn mức', limit, keyboardType: TextInputType.number, currency: true, hint: '50.000.000'),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: DropdownButtonFormField<CardType>(
+                    initialValue: type,
+                    items: CardType.values.map((value) => DropdownMenuItem(value: value, child: Text(cardTypeLabel(value)))).toList(),
+                    onChanged: (value) { if (value != null) setState(() => type = value); },
+                    decoration: const InputDecoration(labelText: 'Loại thẻ'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<int>(
+                    initialValue: graceDays,
+                    items: const [45, 55].map((value) => DropdownMenuItem(value: value, child: Text('$value ngày'))).toList(),
+                    onChanged: (value) { if (value != null) setState(() => graceDays = value); },
+                    decoration: const InputDecoration(labelText: 'Miễn lãi'),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 12),
+              field('Số thẻ', number, keyboardType: TextInputType.number, hint: 'Ví dụ 9704...'),
               Row(children: [
                 Expanded(child: field('Ngày hết hạn', expiry, hint: 'MM/YY')),
                 const SizedBox(width: 10),
@@ -136,8 +156,6 @@ class _CardFormState extends State<CardForm> {
                 const SizedBox(width: 10),
                 Expanded(child: field('Ngày thanh toán', payment, keyboardType: TextInputType.number)),
               ]),
-              field('Số ngày miễn lãi', grace, keyboardType: TextInputType.number),
-              field('Hạn mức', limit, keyboardType: TextInputType.number, currency: true, hint: '50.000.000'),
               const SizedBox(height: 4),
               FilledButton.icon(
                 icon: const Icon(Icons.check_rounded),
@@ -145,11 +163,10 @@ class _CardFormState extends State<CardForm> {
                 onPressed: () async {
                   if (!formKey.currentState!.validate()) return;
                   final cardLimit = parseMoney(limit.text);
-                  final graceDays = int.tryParse(grace.text) ?? 0;
                   final statementDay = int.tryParse(statement.text) ?? 0;
                   final paymentDay = int.tryParse(payment.text) ?? 0;
                   if (cardLimit <= 0 || graceDays <= 0 || statementDay <= 0 || paymentDay <= 0) return;
-                  await AppDb.instance.saveCard(CreditCardModel(number: number.text.trim(), bank: bank.text.trim(), type: type, expiry: expiry.text.trim(), cvv: cvv.text.trim(), graceDays: graceDays, statementDay: statementDay, paymentDay: paymentDay, limit: cardLimit));
+                  await AppDb.instance.saveCard(CreditCardModel(number: number.text.trim(), bank: bankLabel(bank), type: type, expiry: expiry.text.trim(), cvv: cvv.text.trim(), graceDays: graceDays, statementDay: statementDay, paymentDay: paymentDay, limit: cardLimit));
                   if (context.mounted) Navigator.pop(context);
                 },
               ),
