@@ -24,12 +24,7 @@ class TienCuaTuiApp extends StatelessWidget {
           secondary: gold,
           surface: surface,
         ),
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: <TargetPlatform, PageTransitionsBuilder>{
-            TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          },
-        ),
+        
         appBarTheme: const AppBarTheme(
           backgroundColor: bg,
           surfaceTintColor: Colors.transparent,
