@@ -120,27 +120,33 @@ class _LoanFormState extends State<LoanForm> {
   final formKey = GlobalKey<FormState>();
   final content = TextEditingController();
   final amount = TextEditingController();
-  final installments = TextEditingController(text: '12');
   final monthly = TextEditingController();
+  int installments = 12;
   final note = TextEditingController();
   BorrowBank bank = BorrowBank.sacombank;
 
-  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1}) => Padding(
+  Widget field(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text, bool currency = false, int maxLines = 1, bool required = true, ValueChanged<String>? onChanged}) => Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          onChanged: onChanged,
           textInputAction: maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
           inputFormatters: currency ? [MoneyInputFormatter()] : null,
           decoration: InputDecoration(labelText: label, suffixText: currency ? 'đ' : null),
-          validator: (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập $label' : null,
+          validator: required ? (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập $label' : null : null,
         ),
       );
 
+  void _calculateMonthly([String? _]) {
+    final loanAmount = parseMoney(amount.text);
+    monthly.text = loanAmount > 0 ? money((loanAmount / installments).round()) : '';
+  }
+
   @override
   void dispose() {
-    content.dispose(); amount.dispose(); installments.dispose(); monthly.dispose(); note.dispose();
+    content.dispose(); amount.dispose(); monthly.dispose(); note.dispose();
     super.dispose();
   }
 
@@ -161,19 +167,32 @@ class _LoanFormState extends State<LoanForm> {
                 decoration: const InputDecoration(labelText: 'Ngân hàng'),
               ),
               const SizedBox(height: 12),
-              field('Số tiền vay', amount, keyboardType: TextInputType.number, currency: true),
-              Row(children: [
-                Expanded(child: field('Số kỳ', installments, keyboardType: TextInputType.number)),
+              field('Số tiền vay', amount, keyboardType: TextInputType.number, currency: true, onChanged: _calculateMonthly),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: DropdownButtonFormField<int>(
+                    initialValue: installments,
+                    items: const [6, 12, 24].map((value) => DropdownMenuItem(value: value, child: Text('$value kỳ'))).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => installments = value);
+                        _calculateMonthly();
+                      }
+                    },
+                    decoration: const InputDecoration(labelText: 'Số kỳ'),
+                  ),
+                ),
                 const SizedBox(width: 10),
                 Expanded(child: field('Trả mỗi tháng', monthly, keyboardType: TextInputType.number, currency: true)),
               ]),
-              field('Ghi chú', note, maxLines: 3),
+              const SizedBox(height: 12),
+              field('Ghi chú (không bắt buộc)', note, maxLines: 3, required: false),
               FilledButton.icon(
                 icon: const Icon(Icons.check_rounded),
                 label: const Text('Lưu khoản vay'),
                 onPressed: () async {
                   if (!formKey.currentState!.validate()) return;
-                  final count = int.tryParse(installments.text) ?? 0;
+                  final count = installments;
                   final loanAmount = parseMoney(amount.text);
                   final monthlyAmount = parseMoney(monthly.text);
                   if (count <= 0 || loanAmount <= 0 || monthlyAmount <= 0) return;
